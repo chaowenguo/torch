@@ -1,0 +1,11 @@
+{
+    "task": {
+        "path": "."
+    },
+    "trial_name": "torch__vPnRBYi",
+    "trials_dir": "jobs/2026-08-10__02-45-29",
+    "agent": {
+        "name": "nop"
+    },
+    "job_id": "b4bf365b-fcb8-4a87-a14f-f9190beca89a"
+}
