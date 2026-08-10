@@ -1,0 +1,23 @@
+version = "1.0"
+
+[metadata]
+category = "Kernel-Framework Integration"
+secondary_categories = ["Tensor memory/Layout"]
+tags = ["pytorch", "custom-op", "strides", "torch.compile"]
+difficulty = "hard"
+difficulty_explanation = "The task requires diagnosing a silent layout corruption bug where a custom PyTorch C++ extension incorrectly assumes tensor contiguity under torch.compile. The agent must implement proper stride-aware indexing or force contiguity in both the real and fake/meta tensor kernels, navigating PyTorch's dispatcher and compilation stack without leaking the implementation."
+solution_explanation = "Update the custom C++ kernel to compute logical indices using tensor strides instead of assuming flat contiguous memory, and ensure the meta/fake tensor kernel properly propagates input strides to prevent Inductor from generating incorrect stride assumptions."
+verification_explanation = "The test suite validates the custom op against non-contiguous sliced tensors, transposed views, and compiled execution modes (torch.compile), ensuring that output values match an exact fp64 reference and do not produce silent numerical drift or stride mismatch exceptions."
+expert_time_estimate_hours = 4.0
+
+[verifier]
+timeout_sec = 900
+
+[agent]
+timeout_sec = 900
+
+[environment]
+build_timeout_sec = 900
+cpus = 4
+memory_mb = 12288
+storage_mb = 10240

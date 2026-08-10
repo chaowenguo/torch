@@ -1,0 +1,9 @@
+{
+  "fail_to_pass": [
+    "test_non_contiguous_tensor_strides",
+    "test_torch_compile_layout_integration"
+  ],
+  "pass_to_pass": [
+    "test_standard_contiguous_execution"
+  ]
+}
