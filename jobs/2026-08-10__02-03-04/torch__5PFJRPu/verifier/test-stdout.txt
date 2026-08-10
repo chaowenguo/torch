@@ -1,0 +1,13 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.13, pytest-9.1.1, pluggy-1.5.0 -- /opt/conda/bin/python3.11
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /tests
+plugins: hypothesis-6.135.0
+collecting ... collected 3 items
+
+../tests/test_behavior.py::test_standard_contiguous_execution PASSED     [ 33%]
+../tests/test_behavior.py::test_non_contiguous_tensor_strides PASSED     [ 66%]
+../tests/test_behavior.py::test_torch_compile_layout_integration PASSED  [100%]
+
+============================== 3 passed in 8.96s ===============================

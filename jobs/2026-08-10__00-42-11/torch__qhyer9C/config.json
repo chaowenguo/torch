@@ -1,0 +1,11 @@
+{
+    "task": {
+        "path": "."
+    },
+    "trial_name": "torch__qhyer9C",
+    "trials_dir": "jobs/2026-08-10__00-42-11",
+    "agent": {
+        "name": "nop"
+    },
+    "job_id": "61dff234-26fa-4183-ac4c-fdc6ffaf6e8c"
+}

@@ -1,0 +1,71 @@
+Skipping image OS validation for hb__bd928fba3e86e7d63493c70cc3d609b0: docker inspect returned 1
+Trial torch__qhyer9C failed: Docker compose command failed for environment torch. Command: docker compose --project-name torch__qhyer9c__env --project-directory /workspaces/torch/environment -f /tmp/tmp7yqljxqj/torch__qhyer9C__env-docker-compose-resources.json -f /usr/local/python/3.12.1/lib/python3.12/site-packages/harbor/environments/docker/docker-compose-build.yaml -f /tmp/tmpt8x5gfs2/docker-compose-environment.json -f /tmp/tmpn8ddvfjw/docker-compose-mounts.json up --detach --wait. Return code: 1. Stdout: #1 [internal] load local bake definitions
+#1 reading from stdin 527B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile:
+#2 transferring dockerfile: 274B done
+#2 DONE 0.5s
+
+#3 [internal] load metadata for docker.io/pytorch/pytorch:2.7.1-cuda12.8-cudnn9-runtime
+#3 ...
+
+#4 [auth] pytorch/pytorch:pull token for registry-1.docker.io
+#4 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/pytorch/pytorch:2.7.1-cuda12.8-cudnn9-runtime
+#3 DONE 1.1s
+
+#5 [internal] load .dockerignore
+#5 transferring context:
+#5 transferring context: 2B done
+#5 DONE 0.4s
+
+#6 [internal] load build context
+#6 DONE 0.0s
+
+#7 [1/4] FROM docker.io/pytorch/pytorch:2.7.1-cuda12.8-cudnn9-runtime@sha256:c16f4c749e2d9e96878875cdf6cc45cddda1d1a36fddd371dd6f2360f1b6e2a2
+#7 resolve docker.io/pytorch/pytorch:2.7.1-cuda12.8-cudnn9-runtime@sha256:c16f4c749e2d9e96878875cdf6cc45cddda1d1a36fddd371dd6f2360f1b6e2a2
+#7 resolve docker.io/pytorch/pytorch:2.7.1-cuda12.8-cudnn9-runtime@sha256:c16f4c749e2d9e96878875cdf6cc45cddda1d1a36fddd371dd6f2360f1b6e2a2 0.5s done
+#7 DONE 0.6s
+
+#6 [internal] load build context
+#6 transferring context: 32B done
+#6 DONE 0.5s
+
+#8 [2/4] WORKDIR /workspace
+#8 CACHED
+
+#9 [3/4] COPY . .
+#9 CACHED
+
+#10 [4/4] RUN apt-get update && apt-get install -y --no-install-recommends build-essential tmux && rm -rf /var/lib/apt/lists/* && pip install --no-cache-dir pytest
+#10 CACHED
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers done
+#11 exporting manifest sha256:f2d0b57d5098bca6c419c4e56f191750cc3de0ff198bd31e310374a13b67a074 0.1s done
+#11 exporting config sha256:c2b41e55a818e0b5faf09bb5d65963924a23d2ef86958f90990acfb71e8a93e0
+#11 exporting config sha256:c2b41e55a818e0b5faf09bb5d65963924a23d2ef86958f90990acfb71e8a93e0 0.1s done
+#11 exporting attestation manifest sha256:cb1d336f58acb534413a852c0ed8f252248176c35803dea8b2f68d21ef53540b
+#11 exporting attestation manifest sha256:cb1d336f58acb534413a852c0ed8f252248176c35803dea8b2f68d21ef53540b 1.4s done
+#11 exporting manifest list sha256:9340cb3e14ca3d7dbae23b2bb3106c21e71c15f3465bc33f7d6f0e16863d3dc3
+#11 exporting manifest list sha256:9340cb3e14ca3d7dbae23b2bb3106c21e71c15f3465bc33f7d6f0e16863d3dc3 0.7s done
+#11 naming to docker.io/library/torch__qhyer9c__env-main:latest
+#11 naming to docker.io/library/torch__qhyer9c__env-main:latest 0.1s done
+#11 unpacking to docker.io/library/torch__qhyer9c__env-main:latest
+#11 unpacking to docker.io/library/torch__qhyer9c__env-main:latest 0.1s done
+#11 DONE 3.5s
+
+#12 resolving provenance for metadata file
+#12 DONE 0.0s
+ torch__qhyer9c__env-main  Built
+ Network torch__qhyer9c__env_default  Creating
+ Network torch__qhyer9c__env_default  Created
+ Container torch__qhyer9c__env-main-1  Creating
+ Container torch__qhyer9c__env-main-1  Error response from daemon: range of CPUs is from 0.01 to 2.00, as there are only 2 CPUs available
+Error response from daemon: range of CPUs is from 0.01 to 2.00, as there are only 2 CPUs available
+. Stderr: None. 
+Collecting main service artifacts
