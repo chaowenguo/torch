@@ -1,2 +1,0 @@
-/tests/run_script.sh: line 6: unexpected EOF while looking for matching `)'
-/tests/run_script.sh: line 12: syntax error: unexpected end of file
