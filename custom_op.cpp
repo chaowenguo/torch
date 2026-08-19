@@ -1,31 +1,47 @@
 #include <torch/extension.h>
 #include <vector>
 
-// 存在 Bug 的初始实现：直接按连续内存读取，未考虑 strides
+// Fixed C++ kernel with stride-aware indexing
 torch::Tensor custom_weighted_sum_cpu(torch::Tensor input, torch::Tensor weights) {
     TORCH_CHECK(input.device().is_cpu(), "Input must be on CPU");
     TORCH_CHECK(weights.device().is_cpu(), "Weights must be on CPU");
     
     auto sizes = input.sizes();
+    auto strides = input.strides();
+    
+    TORCH_CHECK(input.dim() == 2, "Input must be a 2D tensor");
+    TORCH_CHECK(weights.dim() == 1, "Weights must be a 1D tensor");
+    TORCH_CHECK(sizes[1] == weights.size(0), "Feature dimension must match weights size");
+
     auto output = torch::zeros({sizes[0]}, input.options());
     
-    // 错误地直接使用 data_ptr，当输入是非连续 tensor（如 slice/transpose）时会导致数据错位或越界
     auto input_data = input.data_ptr<float>();
     auto weights_data = weights.data_ptr<float>();
     auto output_data = output.data_ptr<float>();
     
     int64_t batch_size = sizes[0];
     int64_t features = sizes[1];
+    int64_t stride_0 = strides[0];
+    int64_t stride_1 = strides[1];
     
     for (int64_t i = 0; i < batch_size; ++i) {
         float sum = 0.0f;
         for (int64_t j = 0; j < features; ++j) {
-            // 简单直接的线性索引，没有考虑 input.strides()
-            sum += input_data[i * features + j] * weights_data[j];
+            // Correct stride-aware memory access
+            sum += input_data[i * stride_0 + j * stride_1] * weights_data[j];
         }
         output_data[i] = sum;
     }
     return output;
+}
+
+// Meta/Fake kernel for torch.compile / fullgraph support
+torch::Tensor custom_weighted_sum_meta(torch::Tensor input, torch::Tensor weights) {
+    TORCH_CHECK(input.dim() == 2, "Input must be a 2D tensor");
+    TORCH_CHECK(weights.dim() == 1, "Weights must be a 1D tensor");
+    auto sizes = input.sizes();
+    // Return an empty tensor of the correct shape and device/dtype, preserving metadata contract
+    return torch::empty({sizes[0]}, input.options());
 }
 
 TORCH_LIBRARY(custom_ops, m) {
@@ -34,4 +50,8 @@ TORCH_LIBRARY(custom_ops, m) {
 
 TORCH_LIBRARY_IMPL(custom_ops, CPU, m) {
     m.impl("custom_weighted_sum", custom_weighted_sum_cpu);
+}
+
+TORCH_LIBRARY_IMPL(custom_ops, Meta, m) {
+    m.impl("custom_weighted_sum", custom_weighted_sum_meta);
 }
