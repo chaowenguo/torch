@@ -2,7 +2,7 @@ version = "1.0"
 
 [metadata]
 category = "Kernel-Framework Integration"
-secondary_categories = ["Tensor memory/Layout"]
+secondary_categories = []
 tags = ["pytorch", "custom-op", "strides", "torch.compile", "sparse-ops"]
 difficulty = "hard"
 difficulty_explanation = "The task requires fixing a custom C++ operator performing sparse index gather and scaling that fails on non-contiguous weight matrices and lacks meta/fake tensor registration for torch.compile. The agent must implement correct multi-dimensional stride-aware memory access and register the matching meta function."
