@@ -5,57 +5,55 @@ cat << 'EOF' > /workspace/custom_op.cpp
 #include <torch/extension.h>
 #include <vector>
 
-// Fixed C++ kernel with stride-aware indexing
-torch::Tensor custom_weighted_sum_cpu(torch::Tensor input, torch::Tensor weights) {
-    TORCH_CHECK(input.device().is_cpu(), "Input must be on CPU");
-    TORCH_CHECK(weights.device().is_cpu(), "Weights must be on CPU");
+// Fixed C++ kernel with stride-aware indexing and meta registration
+torch::Tensor sparse_gather_scale_cpu(torch::Tensor features, torch::Tensor indices, torch::Tensor scales) {
+    TORCH_CHECK(features.device().is_cpu(), "Features must be on CPU");
+    TORCH_CHECK(indices.device().is_cpu(), "Indices must be on CPU");
+    TORCH_CHECK(scales.device().is_cpu(), "Scales must be on CPU");
     
-    auto sizes = input.sizes();
-    auto strides = input.strides();
+    auto num_indices = indices.size(0);
+    auto hidden_dim = features.size(1);
+    auto strides = features.strides();
     
-    TORCH_CHECK(input.dim() == 2, "Input must be a 2D tensor");
-    TORCH_CHECK(weights.dim() == 1, "Weights must be a 1D tensor");
-    TORCH_CHECK(sizes[1] == weights.size(0), "Feature dimension must match weights size");
-
-    auto output = torch::zeros({sizes[0]}, input.options());
+    auto output = torch::zeros({num_indices, hidden_dim}, features.options());
     
-    auto input_data = input.data_ptr<float>();
-    auto weights_data = weights.data_ptr<float>();
-    auto output_data = output.data_ptr<float>();
+    auto feat_data = features.data_ptr<float>();
+    auto idx_data = indices.data_ptr<int64_t>();
+    auto scale_data = scales.data_ptr<float>();
+    auto out_data = output.data_ptr<float>();
     
-    int64_t batch_size = sizes[0];
-    int64_t features = sizes[1];
     int64_t stride_0 = strides[0];
     int64_t stride_1 = strides[1];
     
-    for (int64_t i = 0; i < batch_size; ++i) {
-        float sum = 0.0f;
-        for (int64_t j = 0; j < features; ++j) {
-            sum += input_data[i * stride_0 + j * stride_1] * weights_data[j];
+    for (int64_t i = 0; i < num_indices; ++i) {
+        int64_t idx = idx_data[i];
+        float sc = scale_data[i];
+        for (int64_t j = 0; j < hidden_dim; ++j) {
+            out_data[i * hidden_dim + j] = feat_data[idx * stride_0 + j * stride_1] * sc;
         }
-        output_data[i] = sum;
     }
     return output;
 }
 
-// Meta/Fake kernel for torch.compile / fullgraph support
-torch::Tensor custom_weighted_sum_meta(torch::Tensor input, torch::Tensor weights) {
-    TORCH_CHECK(input.dim() == 2, "Input must be a 2D tensor");
-    TORCH_CHECK(weights.dim() == 1, "Weights must be a 1D tensor");
-    auto sizes = input.sizes();
-    return torch::empty({sizes[0]}, input.options());
+torch::Tensor sparse_gather_scale_meta(torch::Tensor features, torch::Tensor indices, torch::Tensor scales) {
+    TORCH_CHECK(features.dim() == 2, "Features must be 2D");
+    TORCH_CHECK(indices.dim() == 1, "Indices must be 1D");
+    TORCH_CHECK(scales.dim() == 1, "Scales must be 1D");
+    auto num_indices = indices.size(0);
+    auto hidden_dim = features.size(1);
+    return torch::empty({num_indices, hidden_dim}, features.options());
 }
 
 TORCH_LIBRARY(custom_ops, m) {
-    m.def("custom_weighted_sum(Tensor input, Tensor weights) -> Tensor");
+    m.def("sparse_gather_scale(Tensor features, Tensor indices, Tensor scales) -> Tensor");
 }
 
 TORCH_LIBRARY_IMPL(custom_ops, CPU, m) {
-    m.impl("custom_weighted_sum", custom_weighted_sum_cpu);
+    m.impl("sparse_gather_scale", sparse_gather_scale_cpu);
 }
 
 TORCH_LIBRARY_IMPL(custom_ops, Meta, m) {
-    m.impl("custom_weighted_sum", custom_weighted_sum_meta);
+    m.impl("sparse_gather_scale", sparse_gather_scale_meta);
 }
 EOF
 
