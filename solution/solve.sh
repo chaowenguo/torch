@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 set -euo pipefail
 
 cat << 'EOF' > /workspace/custom_op.cpp
