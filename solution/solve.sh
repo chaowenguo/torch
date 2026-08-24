@@ -4,6 +4,7 @@ cat << 'EOF' > /workspace/custom_op.cpp
 #include <torch/extension.h>
 #include <vector>
 
+// Fixed C++ kernel with stride-aware indexing
 torch::Tensor custom_weighted_sum_cpu(torch::Tensor input, torch::Tensor weights) {
     TORCH_CHECK(input.device().is_cpu(), "Input must be on CPU");
     TORCH_CHECK(weights.device().is_cpu(), "Weights must be on CPU");
@@ -36,6 +37,7 @@ torch::Tensor custom_weighted_sum_cpu(torch::Tensor input, torch::Tensor weights
     return output;
 }
 
+// Meta/Fake kernel for torch.compile / fullgraph support
 torch::Tensor custom_weighted_sum_meta(torch::Tensor input, torch::Tensor weights) {
     TORCH_CHECK(input.dim() == 2, "Input must be a 2D tensor");
     TORCH_CHECK(weights.dim() == 1, "Weights must be a 1D tensor");
